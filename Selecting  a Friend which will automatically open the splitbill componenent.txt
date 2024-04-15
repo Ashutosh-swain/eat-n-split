@@ -1,3 +1,5 @@
+// Selecting  a Friend which will automatically open the splitbill componenent
+
 import { useState } from "react";
 
 const initialFriends = [
@@ -55,19 +57,6 @@ export default function App() {
     setShowAddFriend(false);
   }
 
-  function handleSplitBill(value) {
-    //setSelectedFriend(friend);
-    setFriends((friends) =>
-      friends.map((friend) =>
-        friend.id === selectedFriend.id
-          ? { ...friend, balance: friend.balance + value }
-          : friend
-      )
-    );
-
-    setSelectedFriend(null);
-  }
-
   return (
     <div className="app">
       <div className="sidebar">
@@ -82,13 +71,7 @@ export default function App() {
           {showAddFriend ? "Close" : "Add Friend"}
         </Button>
       </div>
-      {selectedFriend && (
-        <FormSplitBill
-          selectedFriend={selectedFriend}
-          onSplitBill={handleSplitBill}
-          key={selectedFriend.id}
-        />
-      )}
+      {selectedFriend && <FormSplitBill selectedFriend={selectedFriend} />}
     </div>
   );
 }
@@ -182,51 +165,22 @@ function FormAddFriend({ onAddFriend }) {
   );
 }
 
-function FormSplitBill({ selectedFriend, onSplitBill }) {
-  // creating controlled element for input fields of this FormSplitBill component
-  const [bill, setBill] = useState("");
-  const [paidByUser, setPaidByUser] = useState("");
-  const paidByFriend = bill ? bill - paidByUser : "";
-  // creating controlled element for the dropdown of the form
-  const [whoIsPaying, setWhoIsPaying] = useState("user");
-
-  // creating a handler function for the submit event of the form
-  function handleSubmit(e) {
-    e.preventDefault(); // preventing the reload of our page
-
-    if (!bill || !paidByUser) return; // if user does not wrote anything on the form and clicked the submit or pressed enter it will return the function and do nothing
-    onSplitBill(whoIsPaying === "user" ? paidByFriend : -paidByUser);
-  }
+function FormSplitBill({ selectedFriend }) {
   return (
-    <form className="form-split-bill" onSubmit={handleSubmit}>
+    <form className="form-split-bill">
       <h2>Split a bill with {selectedFriend.name}</h2>
 
       <label>💰 Bill value</label>
-      <input
-        type="text"
-        value={bill}
-        onChange={(e) => setBill(Number(e.target.value))}
-      />
+      <input type="text" />
 
       <label>🤵 Your expense</label>
-      <input
-        type="text"
-        value={paidByUser}
-        onChange={(e) =>
-          setPaidByUser(
-            Number(e.target.value) > bill ? paidByUser : Number(e.target.value)
-          )
-        }
-      />
+      <input type="text" />
 
       <label>🧑‍🤝‍🧑 {selectedFriend.name}'s expense</label>
-      <input type="text" value={paidByFriend} disabled />
+      <input type="text" disabled />
 
       <label>🤑 Who is paying the bill</label>
-      <select
-        value={whoIsPaying}
-        onChange={(e) => setWhoIsPaying(e.target.value)}
-      >
+      <select>
         <option value="user">You</option>
         <option value="friend">{selectedFriend.name}</option>
       </select>
@@ -234,3 +188,5 @@ function FormSplitBill({ selectedFriend, onSplitBill }) {
     </form>
   );
 }
+
+
